@@ -1,0 +1,23 @@
+{
+  "name": "tfs-links",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FM-96/tfs-links.git"
+  },
+  "author": "Felix Müllner",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "pug": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^5.15.1"
+  }
+}
