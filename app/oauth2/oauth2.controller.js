@@ -1,22 +1,31 @@
 module.exports = {
 	auth,
 	login,
+	logout,
 };
 
 const got = require('got');
+const jwt = require('../../utils/jwt_promisified.js');
 
 const crypto = require('crypto');
 const util = require('util');
 
+const User = require('../../models/User.js');
+
+const {
+	API_BASE,
+	JWT_ALGORITHM,
+	JWT_COOKIE_EXPIRATION,
+	JWT_EXPIRATION,
+	OAUTH2_STATE_EXPIRY,
+	REQUIRED_SCOPES,
+} = require('../../constants.js');
+
 const randomBytes = util.promisify(crypto.randomBytes);
 
-const API_BASE = 'https://discordapp.com/api/v6';
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URL = process.env.REDIRECT_URL;
-
-const scopes = ['identify', 'guilds'];
+const {CLIENT_ID, CLIENT_SECRET, REDIRECT_URL} = process.env;
 
 const states = new Map();
 
@@ -27,7 +36,7 @@ async function auth(req, res) {
 			throw new Error('Invalid authorization attempt');
 		}
 
-		const redirectTarget = states.get(state).target;
+		const redirectTarget = states.get(state).redirectTarget;
 		states.delete(state);
 
 		const postBody = {
@@ -36,7 +45,7 @@ async function auth(req, res) {
 			grant_type: 'authorization_code',
 			code: code,
 			redirect_uri: REDIRECT_URL,
-			scope: scopes.join(' '),
+			scope: REQUIRED_SCOPES.join(' '),
 		};
 
 		const response = await got.post('/oauth2/token', {
@@ -46,7 +55,7 @@ async function auth(req, res) {
 			json: true,
 		});
 
-		if (!scopes.every(e => response.body.scope.includes(e))) {
+		if (!REQUIRED_SCOPES.every(e => response.body.scope.includes(e))) {
 			throw new Error('Not all required scopes were granted');
 		}
 
@@ -64,17 +73,52 @@ async function auth(req, res) {
 
 		const userId = identifyResponse.body.id;
 
-		// TODO save in database
-		// TODO create JWT
+		// save credentials to database
+		let dbEntry = await User.findOne({userId}).exec();
+		if (!dbEntry) {
+			dbEntry = new User({
+				userId,
+				jwtSecret: (await randomBytes(20)).toString('base64'),
+				oauth2: {},
+			});
+		}
+		dbEntry.oauth2.accessToken = accessToken;
+		dbEntry.oauth2.refreshToken = refreshToken;
+		dbEntry.oauth2.scopes = response.body.scope;
+		dbEntry.oauth2.tokenExpiry = tokenExpiry;
+		await dbEntry.save();
 
-		res.send(`Welcome, ${identifyResponse.body.username}#${identifyResponse.body.discriminator}`);
+		// create JWT
+		const token = await jwt.sign({
+			userId,
+			scopes: response.body.scope,
+			guildsChecked: 0,
+		}, dbEntry.jwtSecret, {
+			algorithm: JWT_ALGORITHM,
+			expiresIn: JWT_EXPIRATION,
+		});
+
+		res.cookie('jwt', token, {
+			httpOnly: true,
+			maxAge: JWT_COOKIE_EXPIRATION,
+			sameSite: 'lax',
+			secure: IS_PRODUCTION,
+		});
+
+		res.redirect(redirectTarget);
 	} catch (err) {
-		res.sendStatus(500);
+		res.status(500).render('login_error');
 	}
 }
 
 async function login(req, res) {
 	try {
+		let redirectTarget = '/';
+		// ensure the redirect cannot lead to a different site
+		if (typeof req.query.target === 'string' && /^\/[^/]/.test(req.query.target)) {
+			redirectTarget = req.query.target;
+		}
+
 		let state;
 		let uniqueState = false;
 		do {
@@ -86,16 +130,25 @@ async function login(req, res) {
 		} while (!uniqueState);
 
 		states.set(state, {
-			target: req.query.target || '/',
-			expires: Date.now() + 300000, // expires in 5 minutes
+			redirectTarget,
+			expires: Date.now() + OAUTH2_STATE_EXPIRY,
 		});
 
-		const authLink = `${API_BASE}/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${scopes.join('%20')}&state=${state}&redirect_uri=${encodeURIComponent(REDIRECT_URL)}`;
+		const authLink = `${API_BASE}/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${REQUIRED_SCOPES.join('%20')}&state=${state}&redirect_uri=${encodeURIComponent(REDIRECT_URL)}`;
 
 		res.redirect(authLink);
 	} catch (err) {
-		res.sendStatus(500);
+		res.status(500).render('login_error');
 	}
+}
+
+function logout(req, res) {
+	res.clearCookie('jwt', {
+		httpOnly: true,
+		sameSite: 'lax',
+		secure: IS_PRODUCTION,
+	});
+	res.redirect('/');
 }
 
 // periodically clean up expired states
