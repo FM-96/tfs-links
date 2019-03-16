@@ -129,7 +129,7 @@ async function login(req, res) {
 		let uniqueState = false;
 		do {
 			const buf = await randomBytes(20);
-			state = buf.toString('base64').replace(/=/g, '');
+			state = buf.toString('base64').replace(/[=+/]/g, '');
 			if (!states.has(state)) {
 				uniqueState = true;
 			}
