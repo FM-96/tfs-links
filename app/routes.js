@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('winston').loggers.get('default');
 
 const path = require('path');
 
@@ -19,7 +20,14 @@ router.use(oauth2Router);
 router.use(requireLogin());
 
 router.use(function (req, res) {
-	res.sendStatus(404);
+	logger.debug(`404: ${req.originalUrl}`);
+	res.status(404).render('not_found');
+});
+
+router.use(function (err, req, res, next) {
+	logger.error('Unhandled error:');
+	logger.error(err);
+	res.status(500).render('error');
 });
 
 module.exports = router;
