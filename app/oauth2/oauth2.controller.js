@@ -6,6 +6,7 @@ module.exports = {
 
 const got = require('got');
 const jwt = require('../../utils/jwt_promisified.js');
+const logger = require('winston').loggers.get('default');
 
 const crypto = require('crypto');
 const util = require('util');
@@ -30,6 +31,7 @@ const {CLIENT_ID, CLIENT_SECRET, REDIRECT_URL} = process.env;
 const states = new Map();
 
 async function auth(req, res) {
+	logger.debug('/auth');
 	try {
 		const {code, state} = req.query;
 		if (!code || !state || !states.has(state) || states.get(state).expires < Date.now()) {
@@ -106,12 +108,16 @@ async function auth(req, res) {
 		});
 
 		res.redirect(redirectTarget);
+		logger.verbose(`${identifyResponse.body.username}#${identifyResponse.body.discriminator} (${userId}) logged in`);
 	} catch (err) {
+		logger.error('Error during authorization process:');
+		logger.error(err);
 		res.status(500).render('login_error');
 	}
 }
 
 async function login(req, res) {
+	logger.debug('/login');
 	try {
 		let redirectTarget = '/';
 		// ensure the redirect cannot lead to a different site
@@ -138,11 +144,14 @@ async function login(req, res) {
 
 		res.redirect(authLink);
 	} catch (err) {
+		logger.error('Error during login process:');
+		logger.error(err);
 		res.status(500).render('login_error');
 	}
 }
 
 function logout(req, res) {
+	logger.debug('/logout');
 	res.clearCookie('jwt', {
 		httpOnly: true,
 		sameSite: 'lax',
@@ -153,6 +162,7 @@ function logout(req, res) {
 
 // periodically clean up expired states
 setInterval(function () {
+	logger.debug('Cleaning up OAuth2 states');
 	for (const [key, value] of states.entries()) {
 		if (value.expires < Date.now()) {
 			states.delete(key);

@@ -4,6 +4,7 @@ module.exports = function () {
 
 const got = require('got');
 const jwt = require('../../utils/jwt_promisified.js');
+const logger = require('winston').loggers.get('default');
 
 const User = require('../../models/User.js');
 
@@ -49,8 +50,10 @@ async function processJwt(req, res, next) {
 			});
 
 			if (Date.now() - payload.guildsChecked > GUILDS_CHECK_INTERVAL) {
+				logger.debug('Checking for guild membership');
 				// refresh OAuth2 access token if needed
 				if (Date.now() - dbEntry.oauth2.tokenExpiry > OAUTH2_TOKEN_REFRESH) {
+					logger.debug('Refreshing OAuth2 access token');
 					const postBody = {
 						client_id: CLIENT_ID,
 						client_secret: CLIENT_SECRET,
@@ -82,6 +85,7 @@ async function processJwt(req, res, next) {
 				});
 
 				if (REQUIRED_GUILD_IDS.some(e => guildsResponse.body.find(f => f.id === e))) {
+					logger.debug('JWT will be reissued (reason: guilds check)');
 					payload.guildsChecked = Date.now();
 					authReissue = true;
 					inGuild = true;
@@ -91,6 +95,7 @@ async function processJwt(req, res, next) {
 			}
 
 			if (Date.now() - (payload.iat * 1000) > JWT_RENEW_INTERVAL) {
+				logger.debug('JWT will be reissued (reason: age)');
 				authReissue = true;
 			}
 
@@ -99,16 +104,20 @@ async function processJwt(req, res, next) {
 				inGuild,
 			};
 		} catch (err) {
+			logger.debug('Exception while processing JWT:');
+			logger.debug(err);
 			authFail = true;
 		}
 
 		if (authFail) {
+			logger.debug('Authentication failed, clearing cookie');
 			res.clearCookie('jwt', {
 				httpOnly: true,
 				sameSite: 'lax',
 				secure: IS_PRODUCTION,
 			});
 		} else if (authReissue) {
+			logger.debug('Reissuing JWT');
 			const newToken = await jwt.sign({
 				userId: payload.userId,
 				scopes: payload.scopes,
