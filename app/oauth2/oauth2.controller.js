@@ -19,7 +19,7 @@ const {
 	JWT_EXPIRATION,
 	OAUTH2_STATE_EXPIRY,
 	REQUIRED_SCOPES,
-} = require('../../constants.js');
+} = require('../../constants/login.js');
 
 const randomBytes = util.promisify(crypto.randomBytes);
 

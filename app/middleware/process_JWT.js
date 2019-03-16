@@ -16,7 +16,7 @@ const {
 	JWT_RENEW_INTERVAL,
 	OAUTH2_TOKEN_REFRESH,
 	REQUIRED_SCOPES,
-} = require('../../constants.js');
+} = require('../../constants/login.js');
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
