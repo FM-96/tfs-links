@@ -1,0 +1,8 @@
+- title = title || 'Home'
+include includes/top.pug
+		h1 Home
+		ul
+			each show in shows
+				li
+					a(href=`/${show.urlName}`) #{show.name}
+		include includes/bottom.pug

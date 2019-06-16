@@ -1,0 +1,21 @@
+- title = title || 'Upload'
+include includes/top.pug
+		h1 Upload
+		h2 Add Link
+		label(for="add-show") Show
+		input#add-show(type="text")
+		label(for="add-episodes") Episodes
+		input#add-episodes(type="text")
+		label(for="add-url") URL
+		input#add-url(type="text")
+		button#add-link Add
+		h2 Delete Link
+		label(for="delete-show") Show
+		input#delete-show(type="text")
+		label(for="delete-episodes") Episodes
+		input#delete-episodes(type="text")
+		label(for="delete-link-id") Link ID
+		input#delete-link-id(type="text")
+		button#delete-link Delete
+		script(src="/assets/js/uploader.js")
+		include includes/bottom.pug

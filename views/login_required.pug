@@ -1,3 +1,6 @@
-p login required
-p
-	a(href='/login?target=' + redirectTarget) Login
+- title = title || 'Login Required'
+include includes/top.pug
+		p login required
+		p
+			a(href='/login?target=' + redirectTarget) Login
+		include includes/bottom.pug

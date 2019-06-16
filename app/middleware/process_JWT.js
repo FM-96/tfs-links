@@ -6,6 +6,7 @@ const got = require('got');
 const jwt = require('../../utils/jwt_promisified.js');
 const logger = require('winston').loggers.get('default');
 
+const Uploader = require('../../models/Uploader.js');
 const User = require('../../models/User.js');
 
 const {
@@ -23,6 +24,7 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 const {CLIENT_ID, CLIENT_SECRET, REDIRECT_URL} = process.env;
 const REQUIRED_GUILD_IDS = process.env.REQUIRED_GUILD_IDS.split(',');
+const ADMIN_IDS = process.env.ADMIN_IDS.split(',');
 
 async function processJwt(req, res, next) {
 	const token = req.cookies.jwt;
@@ -99,9 +101,13 @@ async function processJwt(req, res, next) {
 				authReissue = true;
 			}
 
+			const uploader = await Uploader.findOne({userId: payload.userId}).exec();
+
 			req.auth = {
 				userId: payload.userId,
 				inGuild,
+				isAdmin: ADMIN_IDS.includes(payload.userId),
+				isUploader: Boolean(uploader),
 			};
 		} catch (err) {
 			logger.debug('Exception while processing JWT:');

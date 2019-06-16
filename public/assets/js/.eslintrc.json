@@ -1,0 +1,30 @@
+/*
+Personal ESLint config file
+Browser (under Node) v1.0.0
+Made for ESLint v4.0.0 - v4.5.0+
+*/
+{
+	"env": {
+		"browser": true,
+		"node": false
+	},
+	"rules": {
+		// Possible Errors
+		"no-console": "error",
+		// Best Practices
+		"no-alert": "error",
+		"no-script-url": "error",
+		// Variables
+		// no changes
+		// Node.js and CommonJS
+		"global-require": "off",
+		"no-buffer-constructor": "off",
+		"no-mixed-requires": "off",
+		"no-new-require": "off",
+		"no-path-concat": "off",
+		// Stylistic Issues
+		"consistent-this": "error"
+		// ECMAScript 6
+		// no changes
+	}
+}

@@ -3,6 +3,7 @@ module.exports = function () {
 };
 
 function requireLogin(req, res, next) {
+	// TODO differentiate for API calls
 	if (!req.auth) {
 		res.render('login_required', {
 			redirectTarget: encodeURIComponent(req.originalUrl),
