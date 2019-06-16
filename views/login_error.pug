@@ -1,5 +1,12 @@
 - title = title || 'Login Error'
-include includes/top.pug
-		p login error
-		p Go back or #[a(href='/login') try again].
-		include includes/bottom.pug
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			p login error
+			p Go back or #[a(href='/login') try again].
+		include includes/footer.pug

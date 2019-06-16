@@ -1,5 +1,13 @@
 - title = title || 'Gone'
-include includes/top.pug
-		p 410
-		p This link is no longer available.
-		include includes/bottom.pug
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			p 410
+			p This link is no longer available.
+		include includes/footer.pug
+		include includes/materialize_body.pug

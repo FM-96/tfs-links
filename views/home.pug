@@ -1,8 +1,17 @@
-- title = title || 'Home'
-include includes/top.pug
-		h1 Home
-		ul
-			each show in shows
-				li
-					a(href=`/${show.urlName}`) #{show.name}
-		include includes/bottom.pug
+- title = title || 'TheFlamingShark Links'
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			ul
+				each show in shows
+					li
+						a(href=`/${show.urlName}`)
+							div.card
+								div.card-content
+									span.card-title #{show.name}
+		include includes/footer.pug

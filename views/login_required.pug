@@ -1,6 +1,13 @@
 - title = title || 'Login Required'
-include includes/top.pug
-		p login required
-		p
-			a(href='/login?target=' + redirectTarget) Login
-		include includes/bottom.pug
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			p login required
+			p
+				a(href='/login?target=' + redirectTarget) Login
+		include includes/footer.pug

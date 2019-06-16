@@ -1,5 +1,12 @@
 - title = title || 'Not in Guild'
-include includes/top.pug
-		p 401
-		p not in guild
-		include includes/bottom.pug
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			p 401
+			p not in guild
+		include includes/footer.pug

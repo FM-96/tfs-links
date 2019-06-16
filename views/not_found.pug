@@ -1,4 +1,11 @@
 - title = title || 'Not Found'
-include includes/top.pug
-		p 404
-		include includes/bottom.pug
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			p 404
+		include includes/footer.pug

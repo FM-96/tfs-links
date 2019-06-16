@@ -1,13 +1,20 @@
 - title = title || 'Admin'
-include includes/top.pug
-		h1 Admin
-		h2 Uploaders
-		ul
-			each uploader in uploaders
-				li #{uploader.userId}
-					button.delete-uploader(data-id=uploader.userId) Delete
-		h2 Add New Uploader
-		input#new-uploader(type="text", name="new-uploader")
-		button#add-uploader Add
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			h1 Admin
+			h2 Uploaders
+			ul
+				each uploader in uploaders
+					li #{uploader.userId}
+						button.delete-uploader(data-id=uploader.userId) Delete
+			h2 Add New Uploader
+			input#new-uploader(type="text", name="new-uploader")
+			button#add-uploader Add
+		include includes/footer.pug
 		script(src="/assets/js/admin.js")
-		include includes/bottom.pug

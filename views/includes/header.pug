@@ -1,0 +1,25 @@
+header
+	nav
+		div.container
+			div.nav-wrapper
+				if auth
+					ul.left
+						li
+							a(href="/") Home
+					ul.right
+						if auth.isUploader
+							li
+								a(href="/uploader") Uploader
+						if auth.isAdmin
+							li
+								a(href="/admin") Admin
+						li
+							a(href="/logout") Logout
+	if breadcrumbs
+		nav.breadcrumb-wrapper.grey
+			div.container
+				div.valign-wrapper
+					a.breadcrumb(href="/") #[i.material-icons home]
+					each item in breadcrumbs
+						a.breadcrumb(href=item.url) #{item.text}
+		link(rel="stylesheet", href="/assets/css/breadcrumbs.css")

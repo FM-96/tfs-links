@@ -1,5 +1,12 @@
 - title = title || 'Unauthorized'
-include includes/top.pug
-		p 401
-		p You're not allowed to be here.
-		include includes/bottom.pug
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			p 401
+			p You're not allowed to be here.
+		include includes/footer.pug

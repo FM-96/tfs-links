@@ -1,8 +1,14 @@
 - title = title || 'Video'
-include includes/top.pug
-		h1 #{show.name} #{video.episodes}
-		ul
-			each link in video.links
-				li
-					a(href=`/${show.urlName}/${video.urlEpisodes}/${link.linkId}`) Link #{link.linkId}
-		include includes/bottom.pug
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			h1 #{show.name} #{video.episodes}
+			div.collection
+				each link in video.links
+					a.collection-item(href=`/${show.urlName}/${video.urlEpisodes}/${link.linkId}`) Link #{link.linkId}
+		include includes/footer.pug

@@ -1,4 +1,11 @@
 - title = title || 'Error'
-include includes/top.pug
-		p error
-		include includes/bottom.pug
+doctype html
+html
+	head
+		title #{title}
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			p error
+		include includes/footer.pug

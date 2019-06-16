@@ -41,20 +41,23 @@ async function showPage(req, res) {
 	const pugData = {
 		auth: req.auth,
 		title: null,
+		breadcrumbs: [],
 		show: null,
 		videos: null,
 	};
 	try {
-		pugData.show = await Show.findOne({urlName: req.params.show}).exec();
-		if (!pugData.show) {
+		const show = await Show.findOne({urlName: req.params.show}).exec();
+		if (!show) {
 			res.status(404).render('not_found', pugData);
 			return;
 		}
-		pugData.videos = await Video.find({show: pugData.show._id}).exec();
-		for (const video of pugData.videos) {
+		pugData.breadcrumbs.push({text: show.name, url: `/${show.urlName}`});
+
+		const videos = await Video.find({show: show._id}).exec();
+		for (const video of videos) {
 			video.links = await Link.find({video: video._id}).exec();
 		}
-		pugData.videos.sort((a, b) => {
+		videos.sort((a, b) => {
 			if (a.episodes.toLowerCase() < b.episodes.toLowerCase()) {
 				return -1;
 			}
@@ -64,7 +67,9 @@ async function showPage(req, res) {
 			return 0;
 		});
 
-		pugData.title = pugData.show.name;
+		pugData.title = show.name;
+		pugData.show = show;
+		pugData.videos = videos;
 
 		res.render('show', pugData);
 	} catch (err) {
@@ -79,23 +84,30 @@ async function videoPage(req, res) {
 	const pugData = {
 		auth: req.auth,
 		title: null,
+		breadcrumbs: [],
 		show: null,
 		video: null,
 	};
 	try {
-		pugData.show = await Show.findOne({urlName: req.params.show}).exec();
-		if (!pugData.show) {
+		const show = await Show.findOne({urlName: req.params.show}).exec();
+		if (!show) {
 			res.status(404).render('not_found', pugData);
 			return;
 		}
-		pugData.video = await Video.findOne({show: pugData.show._id, urlEpisodes: req.params.episodes}).exec();
-		if (!pugData.video) {
-			res.status(404).render('not_found', pugData);
-			return;
-		}
-		pugData.video.links = await Link.find({video: pugData.video._id}).exec();
+		pugData.breadcrumbs.push({text: show.name, url: `/${show.urlName}`});
 
-		pugData.title = `${pugData.show.name} ${pugData.video.episodes}`;
+		const video = await Video.findOne({show: show._id, urlEpisodes: req.params.episodes}).exec();
+		if (!video) {
+			res.status(404).render('not_found', pugData);
+			return;
+		}
+		pugData.breadcrumbs.push({text: video.episodes, url: `/${show.urlName}/${video.urlEpisodes}`});
+
+		video.links = await Link.find({video: video._id}).exec();
+
+		pugData.title = `${show.name} ${video.episodes}`;
+		pugData.show = show;
+		pugData.video = video;
 
 		res.render('video', pugData);
 	} catch (err) {
@@ -109,6 +121,7 @@ async function videoPage(req, res) {
 async function linkPage(req, res) {
 	const pugData = {
 		auth: req.auth,
+		breadcrumbs: [],
 	};
 	try {
 		const show = await Show.findOne({urlName: req.params.show}).exec();
@@ -116,14 +129,19 @@ async function linkPage(req, res) {
 			res.status(404).render('not_found', pugData);
 			return;
 		}
+		pugData.breadcrumbs.push({text: show.name, url: `/${show.urlName}`});
+
 		const video = await Video.findOne({show: show._id, urlEpisodes: req.params.episodes}).exec();
 		if (!video) {
 			res.status(404).render('not_found', pugData);
 			return;
 		}
+		pugData.breadcrumbs.push({text: video.episodes, url: `/${show.urlName}/${video.urlEpisodes}`});
+
 		const link = await Link.findOne({video: video._id, linkId: req.params.link}).exec();
 		if (!link) {
 			if (req.params.link > 0 && video.nextLinkId > req.params.link) {
+				pugData.breadcrumbs.push({text: req.params.link, url: `/${show.urlName}/${video.urlEpisodes}/${req.params.link}`});
 				res.status(410).render('gone', pugData);
 			} else {
 				res.status(404).render('not_found', pugData);
