@@ -42,9 +42,7 @@
 	});
 
 	// autocompletes
-	const showAutocompletes = []; // XXX M.Autocomplete.init(document.querySelectorAll('.autocomplete-shows'), {onAutocomplete: loadVideoAutocomplete});
-	showAutocompletes.push(M.Autocomplete.init(document.getElementById('add-show'), {onAutocomplete: loadAddVideoAutocomplete}));
-	showAutocompletes.push(M.Autocomplete.init(document.getElementById('delete-show'), {onAutocomplete: loadDeleteVideoAutocomplete}));
+	const showAutocompletes = M.Autocomplete.init(document.querySelectorAll('.autocomplete-shows'), {onAutocomplete: onAutocomplete});
 	M.Autocomplete.init(document.querySelectorAll('.autocomplete-videos'), {});
 
 	showAutocompletes.forEach(e => {
@@ -74,11 +72,8 @@
 		});
 	}
 
-	function loadAddVideoAutocomplete() {
-		loadVideoAutocomplete(document.getElementById('add-show'));
-	}
-	function loadDeleteVideoAutocomplete() {
-		loadVideoAutocomplete(document.getElementById('delete-show'));
+	function onAutocomplete() {
+		loadVideoAutocomplete(this.el);
 	}
 
 	function loadVideoAutocomplete(showInput) {
