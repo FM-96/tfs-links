@@ -11,6 +11,7 @@ const version = require('../../utils/version.js');
 
 const Link = require('../../models/Link.js');
 const Show = require('../../models/Show.js');
+const User = require('../../models/User.js');
 const Video = require('../../models/Video.js');
 
 async function homePage(req, res) {
@@ -60,6 +61,9 @@ async function showPage(req, res) {
 		const videos = await Video.find({show: show._id}).exec();
 		for (const video of videos) {
 			video.links = await Link.find({video: video._id}).exec();
+			for (const link of video.links) {
+				link.uploader = await User.findOne({userId: link.uploaderId}).select({userId: 1, info: 1}).exec();
+			}
 		}
 		videos.sort((a, b) => {
 			if (a.episodes.toLowerCase() < b.episodes.toLowerCase()) {
@@ -109,6 +113,9 @@ async function videoPage(req, res) {
 		pugData.breadcrumbs.push({text: video.episodes, url: `/${show.urlName}/${video.urlEpisodes}`});
 
 		video.links = await Link.find({video: video._id}).exec();
+		for (const link of video.links) {
+			link.uploader = await User.findOne({userId: link.uploaderId}).select({userId: 1, info: 1}).exec();
+		}
 
 		pugData.title = `${show.name} ${video.episodes}`;
 		pugData.show = show;

@@ -9,5 +9,12 @@ html
 			h1 #{show.name} #{video.episodes}
 			div.collection
 				each link in video.links
-					a.collection-item(href=`/${show.urlName}/${video.urlEpisodes}/${link.linkId}`) Link #{link.linkId}
+					a.collection-item.avatar(href=`/${show.urlName}/${video.urlEpisodes}/${link.linkId}`)
+						span.title #{(new URL(link.url)).hostname}
+						if (link.uploader && link.uploader.info.avatar && link.uploader.info.tag)
+							img.circle(src=link.uploader.info.avatar, alt="")
+							p added by #{link.uploader.info.tag}
+						else
+							img.circle(alt="")
+							p added by #[em #{link.uploaderId}]
 		include includes/footer.pug
