@@ -13,12 +13,19 @@
 			},
 			body: JSON.stringify({show, episodes, url}),
 		}).then(res => {
-			// TODO check status
-			// TODO display error
+			// TODO better error check
+			if (res.status !== 200) {
+				M.toast({html: 'Error'});
+				loadShowAutocompletes();
+				return;
+			}
 			// TODO feedback if show/video was created
+			document.getElementById('add-url').value = '';
+			M.toast({html: 'Link added'});
 			loadShowAutocompletes();
-		}).catch(err => {
-			// TODO display error
+		}).catch(err => { // eslint-disable-line handle-callback-err
+			M.toast({html: 'Network Error'});
+			loadShowAutocompletes();
 		});
 	});
 	// delete link
@@ -34,10 +41,14 @@
 			method: 'DELETE',
 			credentials: 'same-origin',
 		}).then(res => {
-			// TODO check status
-			// TODO display error
-		}).catch(err => {
-			// TODO display error
+			// TODO better error check
+			if (res.status !== 200) {
+				M.toast({html: 'Error'});
+				return;
+			}
+			M.toast({html: 'Link deleted'});
+		}).catch(err => { // eslint-disable-line handle-callback-err
+			M.toast({html: 'Network Error'});
 		});
 	});
 
