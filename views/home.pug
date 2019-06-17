@@ -11,7 +11,7 @@ html
 				each show in shows
 					li
 						a(href=`/${show.urlName}`)
-							div.card
+							div.card.hoverable
 								div.card-content
 									span.card-title #{show.name}
 		include includes/footer.pug
