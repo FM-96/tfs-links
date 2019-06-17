@@ -15,4 +15,7 @@ router.delete('/uploaders/:id', requireAdmin(true), apiController.deleteUploader
 router.post('/links', requireUploader(true), apiController.createLink);
 router.delete('/links/:show/:episodes/:id', requireUploader(true), apiController.deleteLink);
 
+router.get('/shows', apiController.listShows);
+router.get('/:show/videos', apiController.listVideos);
+
 module.exports = router;

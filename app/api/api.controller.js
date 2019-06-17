@@ -3,6 +3,8 @@ module.exports = {
 	deleteUploader,
 	createLink,
 	deleteLink,
+	listShows,
+	listVideos,
 };
 
 const logger = require('winston').loggers.get('default');
@@ -129,6 +131,35 @@ async function deleteLink(req, res) {
 		res.send(apiResultOk(link));
 	} catch (err) {
 		logger.error('Error while deleting link:');
+		logger.error(err);
+		res.status(500).send(apiResultError('database error'));
+		return;
+	}
+}
+
+async function listShows(req, res) {
+	try {
+		const shows = await Show.find().exec();
+		res.send(shows);
+	} catch (err) {
+		logger.error('Error while listing shows:');
+		logger.error(err);
+		res.status(500).send(apiResultError('database error'));
+		return;
+	}
+}
+
+async function listVideos(req, res) {
+	try {
+		const show = await Show.findOne({urlName: req.params.show}).exec();
+		if (!show) {
+			res.status(404).send(apiResultError('show not found'));
+			return;
+		}
+		const videos = await Video.find({show: show._id}).exec();
+		res.send(videos);
+	} catch (err) {
+		logger.error(`Error while listing videos for "${req.params.show}":`);
 		logger.error(err);
 		res.status(500).send(apiResultError('database error'));
 		return;
