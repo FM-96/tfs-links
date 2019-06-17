@@ -12,6 +12,7 @@ const {apiResultError, apiResultOk} = require('../../utils/apiResults.js');
 const Link = require('../../models/Link.js');
 const Show = require('../../models/Show.js');
 const Uploader = require('../../models/Uploader.js');
+const User = require('../../models/User.js');
 const Video = require('../../models/Video.js');
 
 async function createUploader(req, res) {
@@ -25,8 +26,10 @@ async function createUploader(req, res) {
 			res.status(400).send(apiResultError('uploader already exists'));
 			return;
 		}
+		const uploaderUser = await User.findOne({userId: req.body.userId}).exec();
 		const newUploader = new Uploader({
 			userId: req.body.userId,
+			info: uploaderUser ? uploaderUser.info : {},
 		});
 		const saved = await newUploader.save();
 		res.send(apiResultOk(saved));

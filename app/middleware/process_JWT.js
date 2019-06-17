@@ -18,6 +18,7 @@ const {
 	JWT_RENEW_INTERVAL,
 	OAUTH2_TOKEN_REFRESH,
 	REQUIRED_SCOPES,
+	USER_INFO_CHECK_INTERVAL,
 } = require('../../constants/login.js');
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
@@ -51,30 +52,33 @@ async function processJwt(req, res, next) {
 				algorithm: JWT_ALGORITHM,
 			});
 
+			if (Date.now() - payload.userInfoChecked > USER_INFO_CHECK_INTERVAL) {
+				logger.debug('Updating user information');
+				// refresh OAuth2 access token if needed
+				if (Date.now() - dbEntry.oauth2.tokenExpiry > OAUTH2_TOKEN_REFRESH) {
+					await refreshAccessToken(dbEntry);
+				}
+
+				// get user information
+				const guildsResponse = await got('/users/@me', {
+					baseUrl: API_BASE,
+					headers: {
+						Authorization: `Bearer ${dbEntry.oauth2.accessToken}`,
+					},
+					json: true,
+				});
+
+				await updateUserInfo(guildsResponse.body);
+				logger.debug('JWT will be reissued (reason: user info update)');
+				payload.userInfoChecked = Date.now();
+				authReissue = true;
+			}
+
 			if (Date.now() - payload.guildsChecked > GUILDS_CHECK_INTERVAL) {
 				logger.debug('Checking for guild membership');
 				// refresh OAuth2 access token if needed
 				if (Date.now() - dbEntry.oauth2.tokenExpiry > OAUTH2_TOKEN_REFRESH) {
-					logger.debug('Refreshing OAuth2 access token');
-					const postBody = {
-						client_id: CLIENT_ID,
-						client_secret: CLIENT_SECRET,
-						grant_type: 'refresh_token',
-						refresh_token: dbEntry.oauth2.refreshToken,
-						redirect_uri: REDIRECT_URL,
-						scope: REQUIRED_SCOPES.join(' '),
-					};
-					const response = await got.post('/oauth2/token', {
-						baseUrl: API_BASE,
-						body: postBody,
-						form: true,
-						json: true,
-					});
-
-					dbEntry.oauth2.accessToken = response.body.access_token;
-					dbEntry.oauth2.refreshToken = response.body.refresh_token;
-					dbEntry.oauth2.tokenExpiry = Date.now() + (response.body.expires_in * 1000);
-					await dbEntry.save();
+					await refreshAccessToken(dbEntry);
 				}
 
 				// check if the user is in at least one of the required guilds
@@ -128,6 +132,7 @@ async function processJwt(req, res, next) {
 				userId: payload.userId,
 				scopes: payload.scopes,
 				guildsChecked: payload.guildsChecked,
+				userInfoChecked: payload.userInfoChecked,
 			}, secret, {
 				algorithm: JWT_ALGORITHM,
 				expiresIn: JWT_EXPIRATION,
@@ -141,4 +146,58 @@ async function processJwt(req, res, next) {
 		}
 	}
 	next();
+}
+
+async function refreshAccessToken(dbEntry) {
+	logger.debug('Refreshing OAuth2 access token');
+	const postBody = {
+		client_id: CLIENT_ID,
+		client_secret: CLIENT_SECRET,
+		grant_type: 'refresh_token',
+		refresh_token: dbEntry.oauth2.refreshToken,
+		redirect_uri: REDIRECT_URL,
+		scope: REQUIRED_SCOPES.join(' '),
+	};
+	const response = await got.post('/oauth2/token', {
+		baseUrl: API_BASE,
+		body: postBody,
+		form: true,
+		json: true,
+	});
+
+	dbEntry.oauth2.accessToken = response.body.access_token;
+	dbEntry.oauth2.refreshToken = response.body.refresh_token;
+	dbEntry.oauth2.tokenExpiry = Date.now() + (response.body.expires_in * 1000);
+	return dbEntry.save();
+}
+
+async function updateUserInfo(apiUser) {
+	const dbUser = await User.findOne({userId: apiUser.id}).exec();
+	if (!dbUser) {
+		// this shouldn't be able to happen since this was already checked before, but just to be safe
+		throw new Error('Tried to update user that\'s not in database');
+	}
+	dbUser.info.avatar = getUserAvatarUrl(apiUser);
+	dbUser.info.username = apiUser.username;
+	dbUser.info.discriminator = apiUser.discriminator;
+	await dbUser.save();
+	const dbUploader = await Uploader.findOne({userId: apiUser.id}).exec();
+	if (dbUploader) {
+		dbUploader.info.avatar = getUserAvatarUrl(apiUser);
+		dbUploader.info.username = apiUser.username;
+		dbUploader.info.discriminator = apiUser.discriminator;
+		await dbUploader.save();
+	}
+}
+
+function getUserAvatarUrl(apiUser) {
+	if (apiUser.avatar) {
+		if (apiUser.avatar.startsWith('a_')) {
+			return `https://cdn.discordapp.com/avatars/${apiUser.id}/${apiUser.avatar}.gif`;
+		} else {
+			return `https://cdn.discordapp.com/avatars/${apiUser.id}/${apiUser.avatar}.png`;
+		}
+	} else {
+		return `https://cdn.discordapp.com/embed/avatars/${apiUser.discriminator % 5}.png`;
+	}
 }

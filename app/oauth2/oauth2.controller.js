@@ -82,6 +82,7 @@ async function auth(req, res) {
 				userId,
 				jwtSecret: (await randomBytes(20)).toString('base64'),
 				oauth2: {},
+				info: {},
 			});
 		}
 		dbEntry.oauth2.accessToken = accessToken;
@@ -95,6 +96,7 @@ async function auth(req, res) {
 			userId,
 			scopes: response.body.scope,
 			guildsChecked: 0,
+			userInfoChecked: 0,
 		}, dbEntry.jwtSecret, {
 			algorithm: JWT_ALGORITHM,
 			expiresIn: JWT_EXPIRATION,

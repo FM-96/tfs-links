@@ -9,12 +9,18 @@ html
 		main.container
 			h1 Admin
 			h2 Uploaders
-			ul
+			ul.collection
 				each uploader in uploaders
-					li #{uploader.userId}
-						button.delete-uploader(data-id=uploader.userId) Delete
+					li.collection-item.avatar
+						img.circle(src=uploader.info.avatar, alt="")
+						span.title #{uploader.info.tag}
+						p #{uploader.userId}
+						button.btn.secondary-content.waves-effect.delete-uploader(data-id=uploader.userId) Delete
 			h2 Add New Uploader
-			input#new-uploader(type="text", name="new-uploader")
-			button#add-uploader Add
+			div.row
+				div.input-field.col.s4
+					input#new-uploader(type="text")
+					label(for="new-uploader") Discord ID
+				button.btn#add-uploader Add
 		include includes/footer.pug
 		script(src="/assets/js/admin.js")

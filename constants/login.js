@@ -8,4 +8,5 @@ module.exports = {
 	OAUTH2_STATE_EXPIRY: 5 * 60 * 1000, // 5 minutes
 	OAUTH2_TOKEN_REFRESH: 24 * 60 * 60 * 1000, // 1 day
 	REQUIRED_SCOPES: ['identify', 'guilds'],
+	USER_INFO_CHECK_INTERVAL: 60 * 60 * 1000, // 1 hour
 };
