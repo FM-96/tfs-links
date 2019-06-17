@@ -7,6 +7,8 @@ module.exports = {
 
 const logger = require('winston').loggers.get('default');
 
+const version = require('../../utils/version.js');
+
 const Link = require('../../models/Link.js');
 const Show = require('../../models/Show.js');
 const Video = require('../../models/Video.js');
@@ -14,6 +16,7 @@ const Video = require('../../models/Video.js');
 async function homePage(req, res) {
 	const pugData = {
 		auth: req.auth,
+		version,
 		shows: null,
 	};
 	try {
@@ -40,6 +43,7 @@ async function homePage(req, res) {
 async function showPage(req, res) {
 	const pugData = {
 		auth: req.auth,
+		version,
 		title: null,
 		breadcrumbs: [],
 		show: null,
@@ -83,6 +87,7 @@ async function showPage(req, res) {
 async function videoPage(req, res) {
 	const pugData = {
 		auth: req.auth,
+		version,
 		title: null,
 		breadcrumbs: [],
 		show: null,
@@ -121,6 +126,7 @@ async function videoPage(req, res) {
 async function linkPage(req, res) {
 	const pugData = {
 		auth: req.auth,
+		version,
 		breadcrumbs: [],
 	};
 	try {

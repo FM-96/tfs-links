@@ -1,7 +1,12 @@
 const {apiResultError} = require('../../utils/apiResults.js');
+const version = require('../../utils/version.js');
 
 module.exports = function (isApiCall) {
 	function requireAdmin(req, res, next) {
+		const pugData = {
+			auth: req.auth,
+			version,
+		};
 		if (!req.auth.isAdmin) {
 			// TODO WWW-Authenticate header
 			res.status(401);
@@ -9,9 +14,7 @@ module.exports = function (isApiCall) {
 			if (isApiCall) {
 				res.send(apiResultError('must be admin'));
 			} else {
-				res.render('unauthorized', {
-					redirectTarget: encodeURIComponent(req.originalUrl),
-				});
+				res.render('unauthorized', pugData);
 			}
 			return;
 		}

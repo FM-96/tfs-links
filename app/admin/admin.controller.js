@@ -4,11 +4,14 @@ module.exports = {
 
 const logger = require('winston').loggers.get('default');
 
+const version = require('../../utils/version.js');
+
 const Uploader = require('../../models/Uploader.js');
 
 async function handle(req, res) {
 	const pugData = {
 		auth: req.auth,
+		version,
 		uploaders: [],
 	};
 	try {

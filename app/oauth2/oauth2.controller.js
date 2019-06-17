@@ -11,6 +11,8 @@ const logger = require('winston').loggers.get('default');
 const crypto = require('crypto');
 const util = require('util');
 
+const version = require('../../utils/version.js');
+
 const User = require('../../models/User.js');
 
 const {
@@ -32,6 +34,10 @@ const states = new Map();
 
 async function auth(req, res) {
 	logger.debug('/auth');
+	const pugData = {
+		auth: req.auth,
+		version,
+	};
 	try {
 		const {code, state} = req.query;
 		if (!code || !state || !states.has(state) || states.get(state).expires < Date.now()) {
@@ -114,12 +120,16 @@ async function auth(req, res) {
 	} catch (err) {
 		logger.error('Error during authorization process:');
 		logger.error(err);
-		res.status(500).render('login_error');
+		res.status(500).render('login_error', pugData);
 	}
 }
 
 async function login(req, res) {
 	logger.debug('/login');
+	const pugData = {
+		auth: req.auth,
+		version,
+	};
 	try {
 		let redirectTarget = '/';
 		// ensure the redirect cannot lead to a different site
@@ -148,7 +158,7 @@ async function login(req, res) {
 	} catch (err) {
 		logger.error('Error during login process:');
 		logger.error(err);
-		res.status(500).render('login_error');
+		res.status(500).render('login_error', pugData);
 	}
 }
 
