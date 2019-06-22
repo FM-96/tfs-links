@@ -68,6 +68,12 @@ async function createLink(req, res) {
 		return;
 	}
 	try {
+		new URL(req.body.url); // eslint-disable-line no-new
+	} catch (err) {
+		res.status(400).send(apiResultError('invalid URL'));
+		return;
+	}
+	try {
 		let showCreated = false;
 		let videoCreated = false;
 
