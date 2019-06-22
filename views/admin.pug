@@ -21,5 +21,22 @@ html
 					input#new-uploader(type="text")
 					label(for="new-uploader") Discord ID
 				button.btn#add-uploader Add
+			h2 Data Import/Export
+			div.row
+				a.btn.col.s12#export(href="/api/export/links") Export Links
+			div.row
+				button.btn.col.s4#import Import Links
+				input.col.s4#data-file(type="file", accept=".json")
+				div.col.s4
+					div.switch
+						label
+							input#clear(type="checkbox", disabled)
+							span.lever
+							| Clear existing shows, videos, and links
+					div.switch
+						label
+							input#reset(type="checkbox", disabled)
+							span.lever
+							| Reset link IDs
 		include includes/footer.pug
 		script(src="/assets/js/admin.js")

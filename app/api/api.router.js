@@ -18,4 +18,7 @@ router.delete('/links/:show/:episodes/:id', requireUploader(true), apiController
 router.get('/shows', apiController.listShows);
 router.get('/:show/videos', apiController.listVideos);
 
+router.get('/export/links', apiController.exportLinks);
+router.post('/import/links', apiController.importLinks);
+
 module.exports = router;
