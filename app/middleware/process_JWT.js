@@ -68,7 +68,7 @@ async function processJwt(req, res, next) {
 					json: true,
 				});
 
-				await updateUserInfo(guildsResponse.body);
+				await updateUserInfo(guildsResponse.body, dbEntry);
 				logger.debug('JWT will be reissued (reason: user info update)');
 				payload.userInfoChecked = Date.now();
 				authReissue = true;
@@ -112,6 +112,12 @@ async function processJwt(req, res, next) {
 				inGuild,
 				isAdmin: ADMIN_IDS.includes(payload.userId),
 				isUploader: Boolean(uploader),
+				info: {
+					avatar: dbEntry.info.avatar,
+					username: dbEntry.info.username,
+					discriminator: dbEntry.info.discriminator,
+					tag: dbEntry.info.tag,
+				},
 			};
 		} catch (err) {
 			logger.debug('Exception while processing JWT:');
@@ -171,12 +177,7 @@ async function refreshAccessToken(dbEntry) {
 	return dbEntry.save();
 }
 
-async function updateUserInfo(apiUser) {
-	const dbUser = await User.findOne({userId: apiUser.id}).exec();
-	if (!dbUser) {
-		// this shouldn't be able to happen since this was already checked before, but just to be safe
-		throw new Error('Tried to update user that\'s not in database');
-	}
+async function updateUserInfo(apiUser, dbUser) {
 	dbUser.info.avatar = getUserAvatarUrl(apiUser);
 	dbUser.info.username = apiUser.username;
 	dbUser.info.discriminator = apiUser.discriminator;
