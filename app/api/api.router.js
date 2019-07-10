@@ -7,8 +7,6 @@ const apiController = require('./api.controller.js');
 
 const router = express.Router();
 
-router.use(requireAdmin());
-
 router.post('/uploaders', requireAdmin(true), apiController.createUploader);
 router.delete('/uploaders/:id', requireAdmin(true), apiController.deleteUploader);
 
@@ -18,7 +16,7 @@ router.delete('/links/:show/:episodes/:id', requireUploader(true), apiController
 router.get('/shows', apiController.listShows);
 router.get('/:show/videos', apiController.listVideos);
 
-router.get('/export/links', apiController.exportLinks);
-router.post('/import/links', apiController.importLinks);
+router.get('/export/links', requireAdmin(true), apiController.exportLinks);
+router.post('/import/links', requireAdmin(true), apiController.importLinks);
 
 module.exports = router;
