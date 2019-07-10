@@ -3,6 +3,8 @@ const logger = require('winston').loggers.get('default');
 
 const path = require('path');
 
+const version = require('../utils/version.js');
+
 const processJwt = require('./middleware/process_JWT.js');
 const requireLogin = require('./middleware/require_login.js');
 
@@ -31,14 +33,22 @@ router.use(uploaderRouter);
 router.use(userRouter);
 
 router.use(function (req, res) {
+	const pugData = {
+		auth: req.auth,
+		version,
+	};
 	logger.debug(`404: ${req.originalUrl}`);
-	res.status(404).render('not_found');
+	res.status(404).render('not_found', pugData);
 });
 
 router.use(function (err, req, res, next) {
+	const pugData = {
+		auth: req.auth,
+		version,
+	};
 	logger.error('Unhandled error:');
 	logger.error(err);
-	res.status(500).render('error');
+	res.status(500).render('error', pugData);
 });
 
 module.exports = router;
