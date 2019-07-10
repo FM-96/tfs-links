@@ -259,5 +259,5 @@ async function importLinks(req, res) {
 }
 
 function urlTransform(value) {
-	return value.replace(/ /g, '_');
+	return value.replace(/ /g, '_').replace(/'/g, '');
 }
