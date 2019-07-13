@@ -68,8 +68,11 @@
 			method: 'GET',
 			credentials: 'same-origin',
 		}).then(async res => {
-			// TODO check status
-			// TODO display error
+			// TODO better error check
+			if (res.status !== 200) {
+				M.toast({html: 'Error while loading show list'});
+				return;
+			}
 			const body = await res.json();
 			const data = {};
 			body.forEach(e => {
@@ -78,8 +81,8 @@
 			showAutocompletes.forEach(e => {
 				e.updateData(data);
 			});
-		}).catch(err => {
-			// TODO display error
+		}).catch(err => { // eslint-disable-line handle-callback-err
+			M.toast({html: 'Network Error while loading show list'});
 		});
 	}
 
@@ -97,19 +100,22 @@
 			method: 'GET',
 			credentials: 'same-origin',
 		}).then(async res => {
-			// TODO check status
+			// TODO better error check
 			if (res.status === 404) {
 				return;
 			}
-			// TODO display error
+			if (res.status !== 200) {
+				M.toast({html: 'Error while loading video list'});
+				return;
+			}
 			const body = await res.json();
 			const data = {};
 			body.forEach(e => {
 				data[e.episodes] = null;
 			});
 			videoAutocomplete.updateData(data);
-		}).catch(err => {
-			// TODO display error
+		}).catch(err => { // eslint-disable-line handle-callback-err
+			M.toast({html: 'Network Error while loading video list'});
 		});
 	}
 
