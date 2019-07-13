@@ -11,6 +11,7 @@ module.exports = {
 
 const logger = require('winston').loggers.get('default');
 
+const actionLog = require('../../utils/action_log.js');
 const {apiResultError, apiResultOk} = require('../../utils/apiResults.js');
 
 const Link = require('../../models/Link.js');
@@ -37,6 +38,7 @@ async function createUploader(req, res) {
 		});
 		const saved = await newUploader.save();
 		res.send(apiResultOk(saved));
+		await actionLog.addUploader(req.auth.userId, {uploaderId: req.body.userId});
 	} catch (err) {
 		logger.error('Error while creating uploader:');
 		logger.error(err);
@@ -54,6 +56,7 @@ async function deleteUploader(req, res) {
 	try {
 		const result = await Uploader.findOneAndDelete({userId: id}).exec();
 		res.send(apiResultOk(result));
+		await actionLog.deleteUploader(req.auth.userId, {uploaderId: id});
 	} catch (err) {
 		logger.error('Error while deleting uploader:');
 		logger.error(err);
@@ -115,6 +118,15 @@ async function createLink(req, res) {
 			videoCreated,
 			link: saved,
 		}));
+		await actionLog.addLink(req.auth.userId, {
+			show: show.name,
+			video: video.episodes,
+			link: newLink.linkId,
+			linkUrl: newLink.url,
+			fullLink: `/${show.urlName}/${video.urlEpisodes}/${newLink.linkId}`,
+			showCreated,
+			videoCreated,
+		});
 	} catch (err) {
 		logger.error('Error while creating link:');
 		logger.error(err);
@@ -137,6 +149,13 @@ async function deleteLink(req, res) {
 		}
 		const link = await Link.findOneAndDelete({video: video._id, linkId: req.params.id}).exec();
 		res.send(apiResultOk(link));
+		await actionLog.deleteLink(req.auth.userId, {
+			show: show.name,
+			video: video.episodes,
+			link: link.linkId,
+			linkUrl: link.url,
+			fullLink: `/${show.urlName}/${video.urlEpisodes}/${link.linkId}`,
+		});
 	} catch (err) {
 		logger.error('Error while deleting link:');
 		logger.error(err);
@@ -209,6 +228,7 @@ async function exportLinks(req, res) {
 		res
 			.set('Content-Disposition', `attachment; filename="tfs-links-${(new Date()).toISOString().replace(/-|:|\.\d+/g, '')}.json"`)
 			.send(JSON.stringify(exportedData, null, '\t') + '\n');
+		await actionLog.exportLinks(req.auth.userId);
 	} catch (err) {
 		logger.error(`Error while exporting data:`);
 		logger.error(err);
@@ -250,6 +270,7 @@ async function importLinks(req, res) {
 			}
 		}
 		res.send(apiResultOk('success'));
+		await actionLog.importLinks(req.auth.userId);
 	} catch (err) {
 		logger.error(`Error while importing data:`);
 		logger.error(err);

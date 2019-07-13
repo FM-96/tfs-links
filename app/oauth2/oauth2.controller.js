@@ -11,6 +11,7 @@ const logger = require('winston').loggers.get('default');
 const crypto = require('crypto');
 const util = require('util');
 
+const actionLog = require('../../utils/action_log.js');
 const version = require('../../utils/version.js');
 
 const User = require('../../models/User.js');
@@ -117,6 +118,7 @@ async function auth(req, res) {
 
 		res.redirect(redirectTarget);
 		logger.verbose(`${identifyResponse.body.username}#${identifyResponse.body.discriminator} (${userId}) logged in`);
+		await actionLog.login(userId);
 	} catch (err) {
 		logger.error('Error during authorization process:');
 		logger.error(err);
@@ -162,14 +164,25 @@ async function login(req, res) {
 	}
 }
 
-function logout(req, res) {
-	logger.debug('/logout');
-	res.clearCookie('jwt', {
-		httpOnly: true,
-		sameSite: 'lax',
-		secure: IS_PRODUCTION,
-	});
-	res.redirect('/');
+async function logout(req, res) {
+	try {
+		logger.debug('/logout');
+		res.clearCookie('jwt', {
+			httpOnly: true,
+			sameSite: 'lax',
+			secure: IS_PRODUCTION,
+		});
+		res.redirect('/');
+		await actionLog.logout(req.auth.userId);
+	} catch (err) {
+		const pugData = {
+			auth: req.auth,
+			version,
+		};
+		logger.error('Error during logout process:');
+		logger.error(err);
+		res.status(500).render('error', pugData);
+	}
 }
 
 // periodically clean up expired states

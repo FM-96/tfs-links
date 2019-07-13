@@ -1,0 +1,15 @@
+doctype html
+html
+	head
+		title Action Log – TheFlamingShark Links
+		include includes/materialize_head.pug
+	body
+		include includes/header.pug
+		main.container
+			ul.collection
+				each entry in entries
+					li.collection-item
+						span.title #{entry.userId}
+						p #{entry.timestamp.toISOString()} #[br] #{entry.action} #[br] #{entry.dataStr}
+		include includes/footer.pug
+		script(src="/assets/js/admin.js")

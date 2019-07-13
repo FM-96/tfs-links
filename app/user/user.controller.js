@@ -7,6 +7,7 @@ module.exports = {
 
 const logger = require('winston').loggers.get('default');
 
+const actionLog = require('../../utils/action_log.js');
 const version = require('../../utils/version.js');
 
 const Link = require('../../models/Link.js');
@@ -163,6 +164,14 @@ async function linkPage(req, res) {
 		}
 
 		res.redirect(link.url);
+
+		await actionLog.visitLink(req.auth.userId, {
+			show: show.name,
+			video: video.episodes,
+			link: link.linkId,
+			linkUrl: link.url,
+			fullLink: `/${show.urlName}/${video.urlEpisodes}/${link.linkId}`,
+		});
 	} catch (err) {
 		logger.error(`Error while handling link page "${req.params.show}/${req.params.episodes}/${req.params.link}":`);
 		logger.error(err);
