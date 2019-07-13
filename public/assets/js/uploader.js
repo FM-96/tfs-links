@@ -34,8 +34,8 @@
 		const episodes = document.getElementById('delete-episodes').value;
 		const linkId = document.getElementById('delete-link-id').value;
 
-		const urlShow = show.replace(/ /g, '_').replace(/'/g, ''); // TODO
-		const urlEpisodes = episodes.replace(/ /g, '_').replace(/'/g, ''); // TODO
+		const urlShow = urlTransform(show);
+		const urlEpisodes = urlTransform(episodes);
 
 		fetch(`/api/links/${urlShow}/${urlEpisodes}/${linkId}`, {
 			method: 'DELETE',
@@ -89,7 +89,7 @@
 
 	function loadVideoAutocomplete(showInput) {
 		const videoAutocomplete = M.Autocomplete.getInstance(document.getElementById(showInput.dataset.autocompleteVideos));
-		const urlShow = showInput.value.replace(/ /g, '_').replace(/'/g, ''); // TODO
+		const urlShow = urlTransform(showInput.value);
 		if (!urlShow) {
 			return;
 		}
@@ -111,5 +111,9 @@
 		}).catch(err => {
 			// TODO display error
 		});
+	}
+
+	function urlTransform(value) {
+		return value.replace(/ /g, '_').replace(/'/g, '');
 	}
 })();
