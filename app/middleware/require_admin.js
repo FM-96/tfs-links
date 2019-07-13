@@ -1,4 +1,4 @@
-const {apiResultError} = require('../../utils/apiResults.js');
+const {apiResultError} = require('../../utils/api_results.js');
 const version = require('../../utils/version.js');
 
 module.exports = function (isApiCall) {

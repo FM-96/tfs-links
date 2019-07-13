@@ -12,7 +12,7 @@ module.exports = {
 const logger = require('winston').loggers.get('default');
 
 const actionLog = require('../../utils/action_log.js');
-const {apiResultError, apiResultOk} = require('../../utils/apiResults.js');
+const {apiResultError, apiResultOk} = require('../../utils/api_results.js');
 
 const Link = require('../../models/Link.js');
 const Show = require('../../models/Show.js');
