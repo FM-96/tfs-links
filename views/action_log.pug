@@ -10,8 +10,11 @@ html
 			div.ui.divided.items
 				each entry in entries
 					div.item
+						div.ui.mini.avatar.image
+								img(src=users[entry.userId] && users[entry.userId].info.avatar ? users[entry.userId].info.avatar : '', alt="")
 						div.content
-							div.header #{entry.userId}
+							div.header #{users[entry.userId] && users[entry.userId].info.tag ? users[entry.userId].info.tag : ''}
+							div.meta #{entry.userId}
 							div.meta #{entry.timestamp.toISOString()}
 							div.description
 								p #{entry.action} #[br] #{entry.dataStr}
