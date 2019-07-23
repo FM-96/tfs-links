@@ -7,7 +7,7 @@ html
 	body
 		include includes/header.pug
 		main.ui.container
-			h1.ui.header #{show.name} #{video.episodes}
+			h1.ui.header #{show.name === video.episodes ? show.name : `${show.name} ${video.episodes}`}
 			div.ui.divided.items
 				each link in video.links
 					a.item(href=`/${show.urlName}/${video.urlEpisodes}/${link.linkId}`)
