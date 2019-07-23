@@ -3,11 +3,10 @@ doctype html
 html
 	head
 		title #{title} – TheFlamingShark Links
-		include includes/materialize_head.pug
+		include includes/semantic_head.pug
 	body
 		include includes/header.pug
-		main.container
-			h1 Gone
-			p.flow-text This link is no longer available.
+		main.ui.container
+			h1.ui.header Gone
+			p.text-description This link is no longer available.
 		include includes/footer.pug
-		include includes/materialize_body.pug

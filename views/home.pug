@@ -2,15 +2,12 @@ doctype html
 html
 	head
 		title TheFlamingShark Links
-		include includes/materialize_head.pug
+		include includes/semantic_head.pug
 	body
 		include includes/header.pug
-		main.container
-			ul
-				each show in shows
-					li
-						a(href=`/${show.urlName}`)
-							div.card.hoverable
-								div.card-content
-									span.card-title #{show.name}
+		main.ui.container
+			each show in shows
+				div.ui.fluid.link.card
+					div.content
+						a.header(href=`/${show.urlName}`) #{show.name}
 		include includes/footer.pug

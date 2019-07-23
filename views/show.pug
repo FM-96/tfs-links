@@ -2,26 +2,29 @@ doctype html
 html
 	head
 		title #{title} – TheFlamingShark Links
-		include includes/materialize_head.pug
+		include includes/semantic_head.pug
 	body
 		include includes/header.pug
-		main.container
-			h1 #{show.name}
-			ul
-				each video in videos
-					li
-						a(href=`/${show.urlName}/${video.urlEpisodes}`)
-							div.card.hoverable
-								div.card-content
-									span.card-title #{video.episodes}
-									div.collection
-										each link in video.links
-											a.collection-item.avatar(href=`/${show.urlName}/${video.urlEpisodes}/${link.linkId}`)
-												span.title #{(new URL(link.url)).hostname}
-												if (link.uploader && link.uploader.info.avatar && link.uploader.info.tag)
-													img.circle(src=link.uploader.info.avatar, alt="")
-													p added by #{link.uploader.info.tag}
-												else
-													img.circle(alt="")
-													p added by #[em #{link.uploaderId}]
+		main.ui.container
+			h1.ui.header #{show.name}
+			each video in videos
+				div.ui.fluid.link.card
+					div.content
+						a.header(href=`/${show.urlName}/${video.urlEpisodes}`) #{video.episodes}
+					div.extra.content
+						div.ui.divided.items
+							each link in video.links
+								a.item(href=`/${show.urlName}/${video.urlEpisodes}/${link.linkId}`)
+									div.ui.mini.avatar.image
+										if (link.uploader && link.uploader.info.avatar && link.uploader.info.tag)
+											img(src=link.uploader.info.avatar, alt="")
+										else
+											img(alt="")
+									div.content
+										div.header #{(new URL(link.url)).hostname}
+										div.description
+											if (link.uploader && link.uploader.info.avatar && link.uploader.info.tag)
+												p added by #{link.uploader.info.tag}
+											else
+												p added by #[em #{link.uploaderId}]
 		include includes/footer.pug

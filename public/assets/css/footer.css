@@ -6,8 +6,14 @@ body {
 
 main {
 	flex: 1 0 auto;
+	margin-top: 1em;
+	margin-bottom: 1em;
 }
 
 footer.page-footer {
 	padding-top: 0;
+}
+
+.text-description {
+	font-size: 1.33em;
 }

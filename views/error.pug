@@ -3,10 +3,10 @@ doctype html
 html
 	head
 		title #{title} – TheFlamingShark Links
-		include includes/materialize_head.pug
+		include includes/semantic_head.pug
 	body
 		include includes/header.pug
-		main.container
-			h1 Error
-			p.flow-text An unknown error has occurred.
+		main.ui.container
+			h1.ui.header Error
+			p.text-description An unknown error has occurred.
 		include includes/footer.pug

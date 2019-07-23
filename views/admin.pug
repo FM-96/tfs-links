@@ -2,41 +2,42 @@ doctype html
 html
 	head
 		title Admin Area – TheFlamingShark Links
-		include includes/materialize_head.pug
+		include includes/semantic_head.pug
 	body
 		include includes/header.pug
-		main.container
-			h1 Admin
-			h2 Uploaders
-			ul.collection
+		main.ui.container
+			h1.ui.header Admin
+			h2.ui.header Uploaders
+			div.ui.divided.items
 				each uploader in uploaders
-					li.collection-item.avatar
-						img.circle(src=uploader.info.avatar, alt="")
-						span.title #{uploader.info.tag}
-						p #{uploader.userId}
-						button.btn.secondary-content.waves-effect.delete-uploader(data-id=uploader.userId) Delete
-			h2 Add New Uploader
+					div.item
+						div.ui.mini.avatar.image
+							img(src=uploader.info.avatar, alt="")
+						div.content
+							div.header #{uploader.info.tag}
+							div.meta #{uploader.userId}
+						button.ui.red.button.delete-uploader(data-id=uploader.userId) Delete
+			h2.ui.header Add New Uploader
 			div.row
-				div.input-field.col.s4
-					input#new-uploader(type="text")
-					label(for="new-uploader") Discord ID
-				button.btn#add-uploader Add
-			h2 Data Import/Export
-			div.row
-				a.btn.col.s12#export(href="/api/export/links") Export Links
-			div.row
-				button.btn.col.s4#import Import Links
-				input.col.s4#data-file(type="file", accept=".json")
-				div.col.s4
-					div.switch
-						label
+				div.ui.action.input
+					input#new-uploader(type="text", placeholder="Discord ID")
+					button.ui.button#add-uploader Add
+			h2.ui.header Data Import/Export
+			div.ui.grid
+				div.one.column.row
+					div.column
+						a.ui.button.fluid.s12#export(href="/api/export/links") Export Links
+				div.three.column.row
+					div.column
+						button.ui.button.fluid.s4#import Import Links
+					div.column
+						input.column.s4#data-file(type="file", accept=".json")
+					div.column.s4
+						div.ui.toggle.checkbox
 							input#clear(type="checkbox", disabled)
-							span.lever
-							| Clear existing shows, videos, and links
-					div.switch
-						label
+							label Clear existing shows, videos, and links
+						div.ui.toggle.checkbox
 							input#reset(type="checkbox", disabled)
-							span.lever
-							| Reset link IDs
+							label Reset link IDs
 		include includes/footer.pug
 		script(src="/assets/js/admin.js")

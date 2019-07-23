@@ -1,12 +1,13 @@
 /*
 Personal ESLint config file
-Browser (under Node) v1.0.0
+jQuery (under Node) v1.0.0
 Made for ESLint v4.0.0 - v4.5.0+
 */
 {
 	"env": {
 		"browser": true,
-		"node": false
+		"node": false,
+		"jquery": true
 	},
 	"rules": {
 		// Possible Errors

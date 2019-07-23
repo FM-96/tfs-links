@@ -1,4 +1,3 @@
-/* global M */
 (function () {
 	// add link
 	document.getElementById('add-link').addEventListener('click', function (evt) {
@@ -15,16 +14,31 @@
 		}).then(res => {
 			// TODO better error check
 			if (res.status !== 200) {
-				M.toast({html: 'Error'});
+				$('body').toast({
+					class: 'error',
+					message: 'Error',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
 				loadShowAutocompletes();
 				return;
 			}
 			// TODO feedback if show/video was created
 			document.getElementById('add-url').value = '';
-			M.toast({html: 'Link added'});
+			$('body').toast({
+				class: 'success',
+				message: 'Link added',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 			loadShowAutocompletes();
 		}).catch(err => { // eslint-disable-line handle-callback-err
-			M.toast({html: 'Network Error'});
+			$('body').toast({
+				class: 'error',
+				message: 'Network Error',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 			loadShowAutocompletes();
 		});
 	});
@@ -43,25 +57,38 @@
 		}).then(res => {
 			// TODO better error check
 			if (res.status !== 200) {
-				M.toast({html: 'Error'});
+				$('body').toast({
+					class: 'error',
+					message: 'Error',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
 				return;
 			}
-			M.toast({html: 'Link deleted'});
+			$('body').toast({
+				class: 'success',
+				message: 'Link deleted',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 		}).catch(err => { // eslint-disable-line handle-callback-err
-			M.toast({html: 'Network Error'});
+			$('body').toast({
+				class: 'error',
+				message: 'Network Error',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 		});
 	});
 
 	// autocompletes
-	const showAutocompletes = M.Autocomplete.init(document.querySelectorAll('.autocomplete-shows'), {onAutocomplete: onAutocomplete});
-	M.Autocomplete.init(document.querySelectorAll('.autocomplete-videos'), {});
-
-	showAutocompletes.forEach(e => {
-		e.el.addEventListener('blur', function (evt) {
-			loadVideoAutocomplete(this);
-		});
+	$(document).ready(() => {
+		loadShowAutocompletes();
 	});
-	loadShowAutocompletes();
+
+	$('.search-shows').find('input').on('blur', function (evt) {
+		loadVideoAutocomplete(this);
+	});
 
 	function loadShowAutocompletes() {
 		fetch(`/api/shows`, {
@@ -70,28 +97,39 @@
 		}).then(async res => {
 			// TODO better error check
 			if (res.status !== 200) {
-				M.toast({html: 'Error while loading show list'});
+				$('body').toast({
+					class: 'error',
+					message: 'Error while loading show list',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
 				return;
 			}
 			const body = await res.json();
-			const data = {};
-			body.forEach(e => {
-				data[e.name] = null;
-			});
-			showAutocompletes.forEach(e => {
-				e.updateData(data);
+			const data = body.map(e => ({title: e.name}));
+			$('.search-shows').search({
+				source: data,
+				cache: false,
+				showNoResults: false,
+				ignoreDiacritics: true,
+				onSelect: onAutocomplete,
 			});
 		}).catch(err => { // eslint-disable-line handle-callback-err
-			M.toast({html: 'Network Error while loading show list'});
+			$('body').toast({
+				class: 'error',
+				message: 'Network Error while loading show list',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 		});
 	}
 
 	function onAutocomplete() {
-		loadVideoAutocomplete(this.el);
+		loadVideoAutocomplete($(this).find('input')[0]);
 	}
 
 	function loadVideoAutocomplete(showInput) {
-		const videoAutocomplete = M.Autocomplete.getInstance(document.getElementById(showInput.dataset.autocompleteVideos));
+		const $videoSearch = $(document.getElementById(showInput.dataset.searchVideos));
 		const urlShow = urlTransform(showInput.value);
 		if (!urlShow) {
 			return;
@@ -102,20 +140,39 @@
 		}).then(async res => {
 			// TODO better error check
 			if (res.status === 404) {
+				$videoSearch.search({
+					source: [],
+					cache: false,
+					showNoResults: false,
+					ignoreDiacritics: true,
+				});
+				$videoSearch.search('search local', '');
 				return;
 			}
 			if (res.status !== 200) {
-				M.toast({html: 'Error while loading video list'});
+				$('body').toast({
+					class: 'error',
+					message: 'Error while loading video list',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
 				return;
 			}
 			const body = await res.json();
-			const data = {};
-			body.forEach(e => {
-				data[e.episodes] = null;
+			const data = body.map(e => ({title: e.episodes}));
+			$videoSearch.search({
+				source: data,
+				cache: false,
+				showNoResults: false,
+				ignoreDiacritics: true,
 			});
-			videoAutocomplete.updateData(data);
 		}).catch(err => { // eslint-disable-line handle-callback-err
-			M.toast({html: 'Network Error while loading video list'});
+			$('body').toast({
+				class: 'error',
+				message: 'Network Error while loading video list',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 		});
 	}
 

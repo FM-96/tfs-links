@@ -2,11 +2,11 @@ doctype html
 html
 	head
 		title Login Error – TheFlamingShark Links
-		include includes/materialize_head.pug
+		include includes/semantic_head.pug
 	body
 		include includes/header.pug
-		main.container
-			h1 Login Error
-			p.flow-text Something went wrong while trying to log in.
-			p.flow-text Go back or #[a(href='/login') try again].
+		main.ui.container
+			h1.ui.header Login Error
+			p.text-description Something went wrong while trying to log in.
+			p.text-description Go back or #[a(href='/login') try again].
 		include includes/footer.pug

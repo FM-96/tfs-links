@@ -3,12 +3,13 @@ doctype html
 html
 	head
 		title Login Required – TheFlamingShark Links
-		include includes/materialize_head.pug
+		include includes/semantic_head.pug
 	body
 		include includes/header.pug
-		main.container
-			h1 Not Logged In
-			p.flow-text You need to log in to view this page.
-			div.row
-				a.btn.col.l2.offset-l5.m4.offset-m4.s8.offset-s2(href='/login?target=' + redirectTarget) Log In Via Discord
+		main.ui.container
+			h1.ui.header Not Logged In
+			p.text-description You need to log in to view this page.
+			div.ui.grid
+				div.row.centered
+					a.ui.huge.button(href='/login?target=' + redirectTarget) Log In Via Discord
 		include includes/footer.pug

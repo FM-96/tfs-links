@@ -2,13 +2,16 @@ doctype html
 html
 	head
 		title Action Log – TheFlamingShark Links
-		include includes/materialize_head.pug
+		include includes/semantic_head.pug
 	body
 		include includes/header.pug
-		main.container
-			ul.collection
+		main.ui.container
+			div.ui.divided.items
 				each entry in entries
-					li.collection-item
-						span.title #{entry.userId}
-						p #{entry.timestamp.toISOString()} #[br] #{entry.action} #[br] #{entry.dataStr}
+					div.item
+						div.content
+							div.heading #{entry.userId}
+							div.meta #{entry.timestamp.toISOString()}
+							div.description
+								p #{entry.action} #[br] #{entry.dataStr}
 		include includes/footer.pug

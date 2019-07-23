@@ -1,4 +1,3 @@
-/* global M */
 (function () {
 	// add uploader
 	document.getElementById('add-uploader').addEventListener('click', function (evt) {
@@ -15,7 +14,12 @@
 			// TODO display error
 			location.reload(true);
 		}).catch(err => { // eslint-disable-line handle-callback-err
-			M.toast({html: 'Network Error'});
+			$('body').toast({
+				class: 'error',
+				message: 'Network Error',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 		});
 	});
 
@@ -31,7 +35,12 @@
 				// TODO display error
 				this.parentElement.remove();
 			}).catch(err => { // eslint-disable-line handle-callback-err
-				M.toast({html: 'Network Error'});
+				$('body').toast({
+					class: 'error',
+					message: 'Network Error',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
 			});
 		});
 	}
@@ -53,12 +62,27 @@
 		}).then(res => {
 			// TODO better error check
 			if (res.status !== 200) {
-				M.toast({html: 'Error'});
+				$('body').toast({
+					class: 'error',
+					message: 'Error',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
 				return;
 			}
-			M.toast({html: 'Success'});
+			$('body').toast({
+				class: 'success',
+				message: 'Success',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 		}).catch(err => { // eslint-disable-line handle-callback-err
-			M.toast({html: 'Network Error'});
+			$('body').toast({
+				class: 'error',
+				message: 'Network Error',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
 		});
 	});
 })();
