@@ -11,7 +11,7 @@ html
 				each entry in entries
 					div.item
 						div.content
-							div.heading #{entry.userId}
+							div.header #{entry.userId}
 							div.meta #{entry.timestamp.toISOString()}
 							div.description
 								p #{entry.action} #[br] #{entry.dataStr}
