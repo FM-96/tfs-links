@@ -66,10 +66,13 @@ async function deleteUploader(req, res) {
 }
 
 async function createLink(req, res) {
-	if (!req.body.show || !req.body.episodes || !req.body.url) {
+	if ([req.body.show, req.body.episodes, req.body.url].some(e => !e || typeof e !== 'string')) {
 		res.status(400).send(apiResultError('malformed body'));
 		return;
 	}
+	req.body.show = req.body.show.trim();
+	req.body.episodes = req.body.episodes.trim();
+	req.body.url = req.body.url.trim();
 	try {
 		new URL(req.body.url); // eslint-disable-line no-new
 	} catch (err) {
