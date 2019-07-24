@@ -169,7 +169,7 @@ async function deleteLink(req, res) {
 
 async function listShows(req, res) {
 	try {
-		const shows = await Show.find().exec();
+		const shows = await Show.find().sort({name: 1}).exec();
 		res.send(shows);
 	} catch (err) {
 		logger.error('Error while listing shows:');
@@ -186,7 +186,7 @@ async function listVideos(req, res) {
 			res.status(404).send(apiResultError('show not found'));
 			return;
 		}
-		const videos = await Video.find({show: show._id}).exec();
+		const videos = await Video.find({show: show._id}).sort({episodes: 1}).exec();
 		res.send(videos);
 	} catch (err) {
 		logger.error(`Error while listing videos for "${req.params.show}":`);
