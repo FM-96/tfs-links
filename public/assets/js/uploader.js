@@ -11,7 +11,7 @@
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({show, episodes, url}),
-		}).then(res => {
+		}).then(async res => {
 			// TODO better error check
 			if (res.status !== 200) {
 				$('body').toast({
@@ -23,7 +23,36 @@
 				loadShowAutocompletes();
 				return;
 			}
-			// TODO feedback if show/video was created
+
+			let body;
+			try {
+				body = await res.json();
+			} catch (err) {
+				$('body').toast({
+					class: 'error',
+					message: 'Error while parsing response',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
+			}
+
+			if (body.data.showCreated) {
+				$('body').toast({
+					class: 'info',
+					message: 'Show created',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
+			}
+			if (body.data.videoCreated) {
+				$('body').toast({
+					class: 'info',
+					message: 'Video created',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
+			}
+
 			document.getElementById('add-url').value = '';
 			$('body').toast({
 				class: 'success',
