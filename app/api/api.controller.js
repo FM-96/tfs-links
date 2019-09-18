@@ -120,6 +120,7 @@ async function createLink(req, res) {
 			showCreated,
 			videoCreated,
 			link: saved,
+			videoLink: `/${show.urlName}/${video.urlEpisodes}`,
 		}));
 		await actionLog.addLink(req.auth.userId, {
 			show: show.name,

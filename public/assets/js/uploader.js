@@ -56,7 +56,7 @@
 			document.getElementById('add-url').value = '';
 			$('body').toast({
 				class: 'success',
-				message: 'Link added',
+				message: `Link added<br><a class="ui inverted button" href="${body.data.videoLink}">Go to created link</a>`,
 				displayTime: 5000,
 				showProgress: 'top',
 			});
