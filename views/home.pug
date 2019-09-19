@@ -8,7 +8,7 @@ html
 		include includes/header.pug
 		main.ui.container
 			each show in shows
-				div.ui.fluid.link.card
+				a.ui.fluid.card(href=`/${show.urlName}`)
 					div.content
-						a.header(href=`/${show.urlName}`) #{show.name}
+						span.header #{show.name}
 		include includes/footer.pug

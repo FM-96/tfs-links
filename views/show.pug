@@ -10,8 +10,8 @@ html
 			h1.ui.header #{show.name}
 			each video in videos
 				div.ui.fluid.link.card
-					div.content
-						a.header(href=`/${show.urlName}/${video.urlEpisodes}`) #{video.episodes}
+					a.content(href=`/${show.urlName}/${video.urlEpisodes}`)
+						span.header #{video.episodes}
 					div.extra.content
 						div.ui.divided.items
 							each link in video.links
