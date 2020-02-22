@@ -57,11 +57,10 @@ async function auth(req, res) {
 			scope: REQUIRED_SCOPES.join(' '),
 		};
 
-		const response = await got.post('/oauth2/token', {
-			baseUrl: API_BASE,
-			body: postBody,
-			form: true,
-			json: true,
+		const response = await got.post('oauth2/token', {
+			prefixUrl: API_BASE,
+			form: postBody,
+			responseType: 'json',
 		});
 
 		if (!REQUIRED_SCOPES.every(e => response.body.scope.includes(e))) {
@@ -72,12 +71,12 @@ async function auth(req, res) {
 		const refreshToken = response.body.refresh_token;
 		const tokenExpiry = Date.now() + (response.body.expires_in * 1000);
 
-		const identifyResponse = await got('/users/@me', {
-			baseUrl: API_BASE,
+		const identifyResponse = await got('users/@me', {
+			prefixUrl: API_BASE,
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 			},
-			json: true,
+			responseType: 'json',
 		});
 
 		const userId = identifyResponse.body.id;

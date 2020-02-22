@@ -60,12 +60,12 @@ async function processJwt(req, res, next) {
 				}
 
 				// get user information
-				const guildsResponse = await got('/users/@me', {
-					baseUrl: API_BASE,
+				const guildsResponse = await got('users/@me', {
+					prefixUrl: API_BASE,
 					headers: {
 						Authorization: `Bearer ${dbEntry.oauth2.accessToken}`,
 					},
-					json: true,
+					responseType: 'json',
 				});
 
 				await updateUserInfo(guildsResponse.body, dbEntry);
@@ -82,12 +82,12 @@ async function processJwt(req, res, next) {
 				}
 
 				// check if the user is in at least one of the required guilds
-				const guildsResponse = await got('/users/@me/guilds', {
-					baseUrl: API_BASE,
+				const guildsResponse = await got('users/@me/guilds', {
+					prefixUrl: API_BASE,
 					headers: {
 						Authorization: `Bearer ${dbEntry.oauth2.accessToken}`,
 					},
-					json: true,
+					responseType: 'json',
 				});
 
 				if (REQUIRED_GUILD_IDS.some(e => guildsResponse.body.find(f => f.id === e))) {
@@ -164,11 +164,10 @@ async function refreshAccessToken(dbEntry) {
 		redirect_uri: REDIRECT_URL,
 		scope: REQUIRED_SCOPES.join(' '),
 	};
-	const response = await got.post('/oauth2/token', {
-		baseUrl: API_BASE,
-		body: postBody,
-		form: true,
-		json: true,
+	const response = await got.post('oauth2/token', {
+		prefixUrl: API_BASE,
+		form: postBody,
+		responseType: 'json',
 	});
 
 	dbEntry.oauth2.accessToken = response.body.access_token;

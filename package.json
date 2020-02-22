@@ -1,6 +1,6 @@
 {
   "name": "tfs-links",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "cryptr": "^4.0.2",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
-    "got": "^9.6.0",
+    "got": "^10.6.0",
     "jsonwebtoken": "^8.5.0",
     "mongoose": "^5.4.19",
     "pug": "^2.0.3",
