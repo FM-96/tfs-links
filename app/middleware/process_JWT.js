@@ -55,7 +55,7 @@ async function processJwt(req, res, next) {
 			if (Date.now() - payload.userInfoChecked > USER_INFO_CHECK_INTERVAL) {
 				logger.debug('Updating user information');
 				// refresh OAuth2 access token if needed
-				if (Date.now() - dbEntry.oauth2.tokenExpiry > OAUTH2_TOKEN_REFRESH) {
+				if (dbEntry.oauth2.tokenExpiry - Date.now() < OAUTH2_TOKEN_REFRESH) {
 					await refreshAccessToken(dbEntry);
 				}
 
@@ -77,7 +77,7 @@ async function processJwt(req, res, next) {
 			if (Date.now() - payload.guildsChecked > GUILDS_CHECK_INTERVAL) {
 				logger.debug('Checking for guild membership');
 				// refresh OAuth2 access token if needed
-				if (Date.now() - dbEntry.oauth2.tokenExpiry > OAUTH2_TOKEN_REFRESH) {
+				if (dbEntry.oauth2.tokenExpiry - Date.now() < OAUTH2_TOKEN_REFRESH) {
 					await refreshAccessToken(dbEntry);
 				}
 
