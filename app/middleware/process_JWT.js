@@ -60,7 +60,7 @@ async function processJwt(req, res, next) {
 				}
 
 				// get user information
-				const guildsResponse = await got('users/@me', {
+				const identifyResponse = await got('users/@me', {
 					prefixUrl: API_BASE,
 					headers: {
 						Authorization: `Bearer ${dbEntry.oauth2.accessToken}`,
@@ -68,7 +68,7 @@ async function processJwt(req, res, next) {
 					responseType: 'json',
 				});
 
-				await updateUserInfo(guildsResponse.body, dbEntry);
+				await updateUserInfo(identifyResponse.body, dbEntry);
 				logger.debug('JWT will be reissued (reason: user info update)');
 				payload.userInfoChecked = Date.now();
 				authReissue = true;
