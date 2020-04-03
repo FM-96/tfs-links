@@ -153,7 +153,7 @@ async function login(req, res) {
 			expires: Date.now() + OAUTH2_STATE_EXPIRY,
 		});
 
-		const authLink = `${API_BASE}/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${REQUIRED_SCOPES.join('%20')}&state=${state}&redirect_uri=${encodeURIComponent(REDIRECT_URL)}`;
+		const authLink = `${API_BASE}/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${REQUIRED_SCOPES.join('%20')}&state=${state}&redirect_uri=${encodeURIComponent(REDIRECT_URL)}&prompt=none`;
 
 		res.redirect(authLink);
 	} catch (err) {
