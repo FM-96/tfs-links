@@ -6,7 +6,7 @@ const adminController = require('./admin.controller.js');
 
 const router = express.Router();
 
-router.get('/actions', requireAdmin(), adminController.actionLogPage);
+router.get('/actions/:page(\\d+|all)', requireAdmin(), adminController.actionLogPage);
 router.get('/admin', requireAdmin(), adminController.adminPage);
 
 module.exports = router;

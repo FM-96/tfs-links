@@ -1,4 +1,6 @@
 module.exports = {
+	countPages,
+	getAllEntries,
 	getEntries,
 	// admin actions
 	addUploader,
@@ -15,9 +17,19 @@ module.exports = {
 };
 
 const ActionLogEntry = require('../models/ActionLogEntry.js');
+const {ACTION_LOG_ITEMS_PER_PAGE} = require('../constants/pagination.js');
 
-async function getEntries() {
+async function countPages() {
+	const docCount = await ActionLogEntry.countDocuments().exec();
+	return Math.ceil(docCount / ACTION_LOG_ITEMS_PER_PAGE);
+}
+
+async function getAllEntries() {
 	return ActionLogEntry.find().sort({timestamp: -1}).exec();
+}
+
+async function getEntries(page) {
+	return ActionLogEntry.find().sort({timestamp: -1}).skip((page - 1) * ACTION_LOG_ITEMS_PER_PAGE).limit(ACTION_LOG_ITEMS_PER_PAGE).exec();
 }
 
 // admin actions

@@ -7,6 +7,15 @@ html
 	body
 		include includes/header.pug
 		main.ui.container
+			if pagination
+				div.ui.pagination.menu
+					each page in pagination
+						if page.active
+							a.active.item(href=page.url) #{page.text}
+						else if page.url
+							a.item(href=page.url) #{page.text}
+						else
+							a.disabled.item #{page.text}
 			div.ui.divided.items
 				each entry in entries
 					div.item
@@ -18,4 +27,13 @@ html
 							div.meta #{entry.timestamp.toISOString()}
 							div.description
 								p #{entry.action} #[br] #{entry.dataStr}
+			if pagination
+				div.ui.pagination.menu
+					each page in pagination
+						if page.active
+							a.active.item(href=page.url) #{page.text}
+						else if page.url
+							a.item(href=page.url) #{page.text}
+						else
+							a.disabled.item #{page.text}
 		include includes/footer.pug
