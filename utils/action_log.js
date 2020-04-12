@@ -10,6 +10,8 @@ module.exports = {
 	// uploader actions
 	addLink,
 	deleteLink,
+	deleteShow,
+	deleteVideo,
 	// user actions
 	login,
 	logout,
@@ -64,6 +66,16 @@ async function deleteLink(userId, data) {
 	return entry.save();
 }
 
+async function deleteShow(userId, data) {
+	const entry = createActionLogEntry('delete_show', userId, data);
+	return entry.save();
+}
+
+async function deleteVideo(userId, data) {
+	const entry = createActionLogEntry('delete_video', userId, data);
+	return entry.save();
+}
+
 // user actions
 async function login(userId) {
 	const entry = createActionLogEntry('login', userId, null);
@@ -88,6 +100,8 @@ const types = {
 	'import_links': 'admin',
 	'add_link': 'uploader',
 	'delete_link': 'uploader',
+	'delete_show': 'uploader',
+	'delete_video': 'uploader',
 	'login': 'user',
 	'logout': 'user',
 	'visit_link': 'user',

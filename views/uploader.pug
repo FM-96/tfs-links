@@ -42,5 +42,19 @@ html
 							input#delete-link-id(type="text", placeholder="Link ID")
 					div.three.wide.column
 						button.ui.fluid.button#delete-link Delete
+			h2.ui.header Delete Show or Video
+			div.ui.grid
+				div.row
+					div.four.wide.column
+						div.ui.search.search-shows
+							div.ui.fluid.input
+								input.prompt#edit-show(type="text", placeholder="Show", data-search-videos="search-videos-edit")
+					div.four.wide.column
+						div.ui.search#search-videos-edit
+							div.ui.fluid.input(data-tooltip="Leave blank to delete show")
+								input.prompt#edit-episodes(type="text", placeholder="Episodes")
+					div.five.wide.column
+					div.three.wide.column
+						button.ui.fluid.button#edit-delete Delete
 		include includes/footer.pug
 		script(src="/assets/js/uploader.js")

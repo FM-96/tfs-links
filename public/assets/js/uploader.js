@@ -24,16 +24,9 @@
 				return;
 			}
 
-			let body;
-			try {
-				body = await res.json();
-			} catch (err) {
-				$('body').toast({
-					class: 'error',
-					message: 'Error while parsing response',
-					displayTime: 5000,
-					showProgress: 'top',
-				});
+			const body = await parseBody(res);
+			if (!body) {
+				return;
 			}
 
 			if (body.data.showCreated) {
@@ -107,6 +100,142 @@
 				displayTime: 5000,
 				showProgress: 'top',
 			});
+		});
+	});
+
+	// delete show/episodes
+	document.getElementById('edit-delete').addEventListener('click', function (evt) {
+		const show = document.getElementById('edit-show').value.trim();
+		const episodes = document.getElementById('edit-episodes').value.trim();
+
+		const urlShow = urlTransform(show);
+		const urlEpisodes = urlTransform(episodes);
+
+		if (!show) {
+			$('body').toast({
+				class: 'error',
+				message: 'Show can\'t be blank',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
+			return;
+		}
+
+		let request;
+		if (episodes) {
+			request = fetch(`/api/${urlShow}/${urlEpisodes}`, {
+				method: 'DELETE',
+				credentials: 'same-origin',
+			}).then(async res => {
+				const body = await parseBody(res);
+				if (!body) {
+					return;
+				}
+				if (res.status === 404) {
+					$('body').toast({
+						class: 'warning',
+						message: body.error[0].toUpperCase() + body.error.slice(1).toLowerCase(),
+						displayTime: 5000,
+						showProgress: 'top',
+					});
+					return;
+				} else if (res.status === 400) {
+					if (body.error.includes('not empty')) {
+						$('body').toast({
+							class: 'warning',
+							message: 'Video must not contain links',
+							displayTime: 5000,
+							showProgress: 'top',
+						});
+						return;
+					} else {
+						$('body').toast({
+							class: 'error',
+							message: 'Bad request',
+							displayTime: 5000,
+							showProgress: 'top',
+						});
+						return;
+					}
+				} else if (res.status !== 200) {
+					$('body').toast({
+						class: 'error',
+						message: 'Error',
+						displayTime: 5000,
+						showProgress: 'top',
+					});
+					return;
+				}
+				$('body').toast({
+					class: 'success',
+					message: 'Video deleted',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
+				loadShowAutocompletes();
+			});
+		} else {
+			request = fetch(`/api/${urlShow}`, {
+				method: 'DELETE',
+				credentials: 'same-origin',
+			}).then(async res => {
+				if (res.status === 404) {
+					$('body').toast({
+						class: 'warning',
+						message: 'Show not found',
+						displayTime: 5000,
+						showProgress: 'top',
+					});
+					return;
+				} else if (res.status === 400) {
+					const body = await parseBody(res);
+					if (!body) {
+						return;
+					}
+					if (body.error.includes('not empty')) {
+						$('body').toast({
+							class: 'warning',
+							message: 'Show must not contain episodes',
+							displayTime: 5000,
+							showProgress: 'top',
+						});
+						return;
+					} else {
+						$('body').toast({
+							class: 'error',
+							message: 'Bad request',
+							displayTime: 5000,
+							showProgress: 'top',
+						});
+						return;
+					}
+				} else if (res.status !== 200) {
+					$('body').toast({
+						class: 'error',
+						message: 'Error',
+						displayTime: 5000,
+						showProgress: 'top',
+					});
+					return;
+				}
+				$('body').toast({
+					class: 'success',
+					message: 'Show deleted',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
+				loadShowAutocompletes();
+			});
+		}
+
+		request.catch(err => { // eslint-disable-line handle-callback-err
+			$('body').toast({
+				class: 'error',
+				message: 'Network Error',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
+			loadShowAutocompletes();
 		});
 	});
 
@@ -207,5 +336,20 @@
 
 	function urlTransform(value) {
 		return value.replace(/ /g, '_').replace(/'/g, '');
+	}
+
+	async function parseBody(response) {
+		let body;
+		try {
+			body = await response.json();
+		} catch (err) {
+			$('body').toast({
+				class: 'error',
+				message: 'Error while parsing response',
+				displayTime: 5000,
+				showProgress: 'top',
+			});
+		}
+		return body;
 	}
 })();

@@ -7,6 +7,8 @@ module.exports = {
 	listVideos,
 	exportLinks,
 	importLinks,
+	deleteShow,
+	deleteVideo,
 };
 
 const logger = require('winston').loggers.get('default');
@@ -277,6 +279,79 @@ async function importLinks(req, res) {
 		await actionLog.importLinks(req.auth.userId);
 	} catch (err) {
 		logger.error(`Error while importing data:`);
+		logger.error(err);
+		res.status(500).send(apiResultError('database error'));
+		return;
+	}
+}
+
+async function deleteShow(req, res) {
+	if ([req.params.show].some(e => typeof e !== 'string' || !e.trim())) {
+		res.status(400).send(apiResultError('malformed body'));
+		return;
+	}
+	req.params.show = req.params.show.trim();
+	try {
+		const show = await Show.findOne({urlName: req.params.show}).exec();
+		if (!show) {
+			res.status(404).send(apiResultError('show not found'));
+			return;
+		}
+		const video = await Video.findOne({show: show._id}).exec();
+		if (video) {
+			res.status(400).send(apiResultError('show not empty'));
+			return;
+		}
+
+		await show.remove();
+		res.send(apiResultOk());
+
+		await actionLog.deleteShow(req.auth.userId, {
+			show: show.name,
+			fullLink: `/${show.urlName}`,
+		});
+	} catch (err) {
+		logger.error('Error while deleting show:');
+		logger.error(err);
+		res.status(500).send(apiResultError('database error'));
+		return;
+	}
+}
+
+async function deleteVideo(req, res) {
+	if ([req.params.show, req.params.episodes].some(e => typeof e !== 'string' || !e.trim())) {
+		res.status(400).send(apiResultError('malformed body'));
+		return;
+	}
+	req.params.show = req.params.show.trim();
+	req.params.episodes = req.params.episodes.trim();
+	try {
+		const show = await Show.findOne({urlName: req.params.show}).exec();
+		if (!show) {
+			res.status(404).send(apiResultError('show not found'));
+			return;
+		}
+		const video = await Video.findOne({show: show._id}).exec();
+		if (!video) {
+			res.status(404).send(apiResultError('video not found'));
+			return;
+		}
+		const link = await Link.findOne({video: video._id}).exec();
+		if (link) {
+			res.status(400).send(apiResultError('video not empty'));
+			return;
+		}
+
+		await video.remove();
+		res.send(apiResultOk());
+
+		await actionLog.deleteVideo(req.auth.userId, {
+			show: show.name,
+			video: video.episodes,
+			fullLink: `/${show.urlName}/${video.urlEpisodes}`,
+		});
+	} catch (err) {
+		logger.error('Error while deleting video:');
 		logger.error(err);
 		res.status(500).send(apiResultError('database error'));
 		return;

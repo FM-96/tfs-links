@@ -19,4 +19,7 @@ router.get('/:show/videos', apiController.listVideos);
 router.get('/export/links', requireAdmin(true), apiController.exportLinks);
 router.post('/import/links', requireAdmin(true), apiController.importLinks);
 
+router.delete('/:show', requireUploader(true), apiController.deleteShow);
+router.delete('/:show/:episodes', requireUploader(true), apiController.deleteVideo);
+
 module.exports = router;

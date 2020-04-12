@@ -23,6 +23,8 @@ const schema = mongoose.Schema({
 			// uploader actions
 			'add_link',
 			'delete_link',
+			'delete_show',
+			'delete_video',
 			// user actions
 			'login',
 			'logout',
@@ -52,6 +54,10 @@ schema.virtual('dataStr')
 			case 'add_link':
 				return this.data.fullLink;
 			case 'delete_link':
+				return this.data.fullLink;
+			case 'delete_show':
+				return this.data.fullLink;
+			case 'delete_video':
 				return this.data.fullLink;
 			// user actions
 			case 'login':
