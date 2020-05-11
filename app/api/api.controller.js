@@ -331,7 +331,7 @@ async function deleteVideo(req, res) {
 			res.status(404).send(apiResultError('show not found'));
 			return;
 		}
-		const video = await Video.findOne({show: show._id}).exec();
+		const video = await Video.findOne({show: show._id, urlEpisodes: req.params.episodes}).exec();
 		if (!video) {
 			res.status(404).send(apiResultError('video not found'));
 			return;
