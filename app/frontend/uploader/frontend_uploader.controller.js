@@ -4,7 +4,7 @@ module.exports = {
 
 const logger = require('winston').loggers.get('default');
 
-const version = require('../../utils/version.js');
+const version = require('../../../utils/version.js');
 
 async function handle(req, res) {
 	const pugData = {

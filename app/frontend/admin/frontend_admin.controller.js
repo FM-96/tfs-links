@@ -5,11 +5,11 @@ module.exports = {
 
 const logger = require('winston').loggers.get('default');
 
-const actionLog = require('../../utils/action_log.js');
-const version = require('../../utils/version.js');
+const actionLog = require('../../../utils/action_log.js');
+const version = require('../../../utils/version.js');
 
-const Uploader = require('../../models/Uploader.js');
-const User = require('../../models/User.js');
+const Uploader = require('../../../models/Uploader.js');
+const User = require('../../../models/User.js');
 
 async function actionLogPage(req, res) {
 	const pugData = {

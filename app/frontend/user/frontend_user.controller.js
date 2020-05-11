@@ -7,13 +7,13 @@ module.exports = {
 
 const logger = require('winston').loggers.get('default');
 
-const actionLog = require('../../utils/action_log.js');
-const version = require('../../utils/version.js');
+const actionLog = require('../../../utils/action_log.js');
+const version = require('../../../utils/version.js');
 
-const Link = require('../../models/Link.js');
-const Show = require('../../models/Show.js');
-const User = require('../../models/User.js');
-const Video = require('../../models/Video.js');
+const Link = require('../../../models/Link.js');
+const Show = require('../../../models/Show.js');
+const User = require('../../../models/User.js');
+const Video = require('../../../models/Video.js');
 
 async function homePage(req, res) {
 	const pugData = {

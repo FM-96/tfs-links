@@ -6,13 +6,17 @@ const path = require('path');
 const version = require('../utils/version.js');
 
 const processJwt = require('./middleware/process_JWT.js');
+const requireAdmin = require('./middleware/require_admin.js');
 const requireLogin = require('./middleware/require_login.js');
+const requireUploader = require('./middleware/require_uploader.js');
 
-const adminRouter = require('./admin/admin.router.js');
-const apiRouter = require('./api/api.router.js');
+const apiAdminRouter = require('./api/admin/api_admin.router.js');
+const apiUploaderRouter = require('./api/uploader/api_uploader.router.js');
+const apiUserRouter = require('./api/user/api_user.router.js');
+const frontendAdminRouter = require('./frontend/admin/frontend_admin.router.js');
+const frontendUploaderRouter = require('./frontend/uploader/frontend_uploader.router.js');
+const frontendUserRouter = require('./frontend/user/frontend_user.router.js');
 const oauth2Router = require('./oauth2/oauth2.router.js');
-const uploaderRouter = require('./uploader/uploader.router.js');
-const userRouter = require('./user/user.router.js');
 
 const router = express.Router();
 
@@ -26,11 +30,13 @@ router.use(processJwt());
 router.use(oauth2Router);
 router.use(requireLogin());
 
-router.use('/api', apiRouter);
+router.use('/api', requireAdmin(true), apiAdminRouter);
+router.use('/api', requireUploader(true), apiUploaderRouter);
+router.use('/api', apiUserRouter);
 
-router.use(adminRouter);
-router.use(uploaderRouter);
-router.use(userRouter);
+router.use(requireAdmin(), frontendAdminRouter);
+router.use(requireUploader(), frontendUploaderRouter);
+router.use(frontendUserRouter);
 
 router.use(function (req, res) {
 	const pugData = {
