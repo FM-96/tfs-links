@@ -101,14 +101,18 @@ async function deleteLink(req, res) {
 			return;
 		}
 		const link = await Link.findOneAndDelete({video: video._id, linkId: req.params.id}).exec();
-		res.send(apiResultOk(link));
-		await actionLog.deleteLink(req.auth.userId, {
-			show: show.name,
-			video: video.episodes,
-			link: link.linkId,
-			linkUrl: link.url,
-			fullLink: `/${show.urlName}/${video.urlEpisodes}/${link.linkId}`,
-		});
+		if (link) {
+			res.send(apiResultOk(link));
+			await actionLog.deleteLink(req.auth.userId, {
+				show: show.name,
+				video: video.episodes,
+				link: link.linkId,
+				linkUrl: link.url,
+				fullLink: `/${show.urlName}/${video.urlEpisodes}/${link.linkId}`,
+			});
+		} else {
+			res.status(404).send(apiResultError('link not found'));
+		}
 	} catch (err) {
 		logger.error('Error while deleting link:');
 		logger.error(err);

@@ -78,7 +78,15 @@
 			credentials: 'same-origin',
 		}).then(res => {
 			// TODO better error check
-			if (res.status !== 200) {
+			if (res.status === 404) {
+				$('body').toast({
+					class: 'error',
+					message: 'Link with that ID doesn\'t exist',
+					displayTime: 5000,
+					showProgress: 'top',
+				});
+				return;
+			} else if (res.status !== 200) {
 				$('body').toast({
 					class: 'error',
 					message: 'Error',
