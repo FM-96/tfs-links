@@ -17,6 +17,7 @@ app.use(routes);
 mongoose.connect(process.env.MONGODB, {
 	useFindAndModify: false,
 	useNewUrlParser: true,
+	useUnifiedTopology: true,
 }).then(() => {
 	app.listen(process.env.PORT, () => {
 		logger.info(`Listening on port ${process.env.PORT}`);
