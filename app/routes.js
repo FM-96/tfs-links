@@ -6,9 +6,7 @@ const path = require('path');
 const version = require('../utils/version.js');
 
 const processJwt = require('./middleware/process_JWT.js');
-const requireAdmin = require('./middleware/require_admin.js');
 const requireLogin = require('./middleware/require_login.js');
-const requireUploader = require('./middleware/require_uploader.js');
 
 const apiAdminRouter = require('./api/admin/api_admin.router.js');
 const apiUploaderRouter = require('./api/uploader/api_uploader.router.js');
@@ -30,12 +28,12 @@ router.use(processJwt());
 router.use(oauth2Router);
 router.use(requireLogin());
 
-router.use('/api', requireAdmin(true), apiAdminRouter);
-router.use('/api', requireUploader(true), apiUploaderRouter);
+router.use('/api', apiAdminRouter);
+router.use('/api', apiUploaderRouter);
 router.use('/api', apiUserRouter);
 
-router.use(requireAdmin(), frontendAdminRouter);
-router.use(requireUploader(), frontendUploaderRouter);
+router.use(frontendAdminRouter);
+router.use(frontendUploaderRouter);
 router.use(frontendUserRouter);
 
 router.use(function (req, res) {
